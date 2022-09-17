@@ -35,4 +35,33 @@ const createUser = async (req,res,next) => {
     }
 }
 
-module.exports = { createUser }
+const loginUser = async (req,res,next) => {
+    try {
+        const {email, password} = req.body
+
+        if(!(email && password )){
+            res.status(400).send('All fields are required')
+        }
+
+        const encyPassword = await bcrypt.hash(password, 10)
+
+        const user = await Users.findOne({ email })
+        if(!user) {
+            return res.json({msg: "Incorrect username or password", status: false})
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password)
+        if(!isPasswordValid) {
+            return res.json({msg: "Incorrect username or password", status: false})
+        }
+
+        user.password = undefined
+
+        res.status(201).json(user)
+
+    } catch (err) {
+        res.status(400).json({error: err})
+    }
+}
+
+module.exports = { createUser, loginUser }
