@@ -62,4 +62,27 @@ const loginUser = async (req,res,next) => {
     }
 }
 
-module.exports = { createUser, loginUser }
+const setUserAvatar = async (req,res,next) => {
+    try {
+        const userId = req.params.id
+        const avatarImage = req.body.image
+        const userData = await Users.findByIdAndUpdate(
+            userId,
+            {
+                isAvatarImageSet: true,
+                avatarImage
+            },
+            { new: true }
+        )
+
+        return res.status(201).json( {
+            isSet: userData.isAvatarImageSet,
+            image: userData.avatarImage,
+        })
+
+    } catch (error) {
+        res.status(400).json({error: err})
+    }
+}
+
+module.exports = { createUser, loginUser, setUserAvatar }
