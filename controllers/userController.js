@@ -43,8 +43,6 @@ const loginUser = async (req,res,next) => {
             res.status(400).send('All fields are required')
         }
 
-        const encyPassword = await bcrypt.hash(password, 10)
-
         const user = await Users.findOne({ email })
         if(!user) {
             return res.json({msg: "Incorrect username or password", status: false})
@@ -57,7 +55,7 @@ const loginUser = async (req,res,next) => {
 
         user.password = undefined
 
-        res.status(201).json(user)
+        res.status(201).json({status: true , user})
 
     } catch (err) {
         res.status(400).json({error: err})
